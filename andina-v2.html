@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANDINA | Arquitectura de Red Empresarial</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Tailwind Config & Custom Arbitrary Values -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Space Grotesk', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        space: {
+                            900: '#03040a',
+                            800: '#080a15',
+                            700: '#0c1024',
+                        },
+                        cyan: {
+                            400: '#00E5FF',
+                            500: '#00B4D8',
+                            600: '#0077B6',
+                        },
+                        alert: {
+                            400: '#FF3366',
+                        }
+                    },
+                    backgroundImage: {
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                        'grid-pattern': 'linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px)',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* =========================================
+           ADVANCED ARCHITECTURAL CSS ENGINE 
+           ========================================= */
+        
+        :root {
+            --cyan-glow: rgba(0, 229, 255, 0.4);
+            --bg-dark: #050510;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: #e2e8f0;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(0, 180, 216, 0.08), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(0, 229, 255, 0.05), transparent 25%);
+            background-attachment: fixed;
+        }
+
+        /* Ambient Sub-Grid Background */
+        .ambient-grid {
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            background-size: 80px 80px;
+            background-image: 
+                linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
+            mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 80%);
+            -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 80%);
+            pointer-events: none;
+        }
+
+        /* Glassmorphism Refraction Panels */
+        .bento-panel {
+            background: rgba(12, 16, 36, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.1),
+                0 20px 40px -15px rgba(0, 0, 0, 0.5);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.4s ease;
+        }
+        
+        .bento-panel:hover {
+            border-color: rgba(0, 229, 255, 0.3);
+            transform: translateY(-4px);
+        }
+
+        /* Kinetic Data Lines */
+        .data-line-h {
+            position: relative;
+            height: 2px;
+            background: rgba(255,255,255,0.05);
+            overflow: hidden;
+        }
+        .data-line-h::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.8), transparent);
+            animation: flow-right 2.5s infinite linear;
+        }
+        
+        .data-line-v {
+            position: relative;
+            width: 2px;
+            background: rgba(255,255,255,0.05);
+            overflow: hidden;
+        }
+        .data-line-v::after {
+            content: '';
+            position: absolute;
+            top: -100%; left: 0;
+            width: 100%; height: 50%;
+            background: linear-gradient(180deg, transparent, rgba(0, 229, 255, 0.8), transparent);
+            animation: flow-down 2.5s infinite linear;
+        }
+
+        .data-line-v.reverse::after {
+            top: 100%;
+            animation: flow-up 2.5s infinite linear;
+        }
+
+        /* Connection Dashes (Static Base) */
+        .dash-conn {
+            stroke-dasharray: 6, 6;
+            animation: dash-move 20s linear infinite;
+        }
+
+        /* Dynamic SVG Glows */
+        .svg-glow-cyan { filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.6)); }
+        .svg-glow-alert { filter: drop-shadow(0 0 8px rgba(255, 51, 102, 0.6)); }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { 
+            background: rgba(255,255,255,0.1); 
+            border-radius: 4px; 
+        }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(0, 229, 255, 0.5); }
+
+        /* Hardware Accelerated Animations */
+        @keyframes flow-right { 100% { left: 200%; } }
+        @keyframes flow-down { 100% { top: 200%; } }
+        @keyframes flow-up { 100% { top: -200%; } }
+        @keyframes dash-move { to { stroke-dashoffset: -200; } }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            100% { transform: scale(2.5); opacity: 0; }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        /* Reveal Logic */
+        .reveal-node {
+            opacity: 0;
+            transform: translateY(30px) scale(0.98);
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .reveal-node.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* SVG Geometry Helpers */
+        .iso-top { fill: #111827; stroke: rgba(255,255,255,0.1); stroke-width: 1; }
+        .iso-left { fill: #0f172a; stroke: rgba(255,255,255,0.05); stroke-width: 1; }
+        .iso-right { fill: #1e293b; stroke: rgba(255,255,255,0.15); stroke-width: 1; }
+        .iso-accent-cyan { fill: rgba(0, 229, 255, 0.2); stroke: #00E5FF; }
+
+        /* Typographical Adjustments */
+        .tech-font { font-family: 'JetBrains Mono', monospace; }
+        .tracking-ultra { letter-spacing: -0.06em; }
+        
+    </style>
+</head>
+<body class="antialiased selection:bg-cyan-500/30 selection:text-cyan-50">
+
+    <!-- Global Background Elements -->
+    <div class="ambient-grid"></div>
+    
+    <!-- Fixed Navigation / Header Context -->
+    <header class="fixed top-0 w-full z-50 border-b border-white/5 bg-space-900/50 backdrop-blur-xl">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 rounded-lg bento-panel flex items-center justify-center">
+                    <i class="ph ph-network text-cyan-400 text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-bold tracking-ultra text-white uppercase">Andina</h1>
+                    <p class="text-xs text-zinc-400 hidden sm:block">Topología de Red Empresarial V2.4</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3 bg-cyan-400/10 border border-cyan-400/20 px-3 py-1.5 rounded-full">
+                <div class="relative w-2.5 h-2.5">
+                    <div class="absolute inset-0 bg-cyan-400 rounded-full"></div>
+                    <div class="absolute inset-0 bg-cyan-400 rounded-full animate-[pulse-ring_2s_cubic-bezier(0.4,0,0.6,1)_infinite]"></div>
+                </div>
+                <span class="text-xs font-semibold text-cyan-400 tracking-wider uppercase">Sistema Activo</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Architectural Container -->
+    <main class="pt-32 pb-24 px-4 sm:px-6 max-w-[1400px] mx-auto flex flex-col gap-16 md:gap-32">
+
+        <!-- ========================================================
+             SECTION 1: ARQUITECTURA GENERAL (MACRO)
+             ======================================================== -->
+        <section class="min-h-[70vh] flex flex-col justify-center items-center reveal-node" id="arquitectura">
+            
+            <div class="text-center mb-16 space-y-4 max-w-2xl mx-auto">
+                <h2 class="text-4xl md:text-6xl font-bold tracking-ultra text-white">Arquitectura General</h2>
+                <p class="text-zinc-400 text-lg">Visión macro del ecosistema de enrutamiento segmentado. Aislamiento físico y lógico entre dominios locales (LAN) e interfaces externas (WAN).</p>
+            </div>
+
+            <!-- Macro Diagram Logic -->
+            <div class="relative w-full max-w-5xl">
+                <!-- Desktop Flex Layout, Mobile Stack -->
+                <div class="flex flex-col md:flex-row items-center justify-between gap-8 md:gap-0">
+                    
+                    <!-- WAN Zone -->
+                    <div class="w-full md:w-[30%] bento-panel rounded-2xl p-6 relative group z-10 border-t-alert-400/30">
+                        <div class="absolute -top-3 left-4 bg-space-900 border border-alert-400/30 px-3 py-1 rounded-full flex items-center gap-2">
+                            <div class="w-2 h-2 rounded-full bg-alert-400"></div>
+                            <span class="tech-font text-[10px] text-zinc-300">ZONA NO CONFIABLE</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-2">Segmento WAN</h3>
+                        <p class="tech-font text-sm text-alert-400 mb-6 font-semibold">172.30.0.0/24</p>
+                        <ul class="space-y-3">
+                            <li class="flex items-center gap-3 text-sm text-zinc-300"><i class="ph ph-cloud-network text-zinc-500"></i> ISP Cloud Gateway</li>
+                            <li class="flex items-center gap-3 text-sm text-zinc-300"><i class="ph ph-desktop text-zinc-500"></i> PC Sandbox/Pruebas</li>
+                        </ul>
+                    </div>
+
+                    <!-- Horizontal Datapipes (Desktop) -->
+                    <div class="hidden md:flex w-[20%] items-center justify-center relative">
+                        <div class="absolute w-full h-[60px] top-1/2 -translate-y-1/2 flex flex-col justify-between">
+                            <div class="data-line-h"></div>
+                            <div class="data-line-h w-full rotate-180"></div>
+                        </div>
+                    </div>
+
+                    <!-- Vertical Datapipes (Mobile) -->
+                    <div class="md:hidden h-16 w-full flex justify-center items-center relative">
+                        <div class="data-line-v h-full"></div>
+                    </div>
+
+                    <!-- Firewall / Gateway Core -->
+                    <div class="w-full md:w-[40%] text-center z-10 relative">
+                        <!-- Floating Glowing Effects -->
+                        <div class="absolute inset-0 bg-cyan-500/10 blur-[60px] rounded-full z-0 pointer-events-none"></div>
+                        
+                        <div class="bento-panel border-cyan-500/40 rounded-3xl p-8 relative z-10 hover:border-cyan-400 transition-colors">
+                            <!-- SVG Firewall Isometric Icon -->
+                            <div class="w-32 h-32 mx-auto mb-4" style="animation: float 6s ease-in-out infinite;">
+                                <svg viewBox="0 0 100 100" fill="none" class="w-full h-full drop-shadow-2xl">
+                                    <g transform="translate(0, 10)">
+                                        <!-- Bottom Box -->
+                                        <polygon points="50,60 85,45 85,75 50,90" fill="#031118" stroke="#00E5FF" stroke-width="0.5"/>
+                                        <polygon points="15,45 50,60 50,90 15,75" fill="#0f172a" stroke="#00E5FF" stroke-width="0.5"/>
+                                        <polygon points="50,30 85,45 50,60 15,45" fill="#1e293b" stroke="#00E5FF" stroke-width="0.5"/>
+                                        <!-- Top Shield Plate -->
+                                        <path d="M50,20 L80,35 L80,50 L50,65 L20,50 L20,35 Z" fill="#0c1024" stroke="#00E5FF" stroke-width="1.5" class="svg-glow-cyan"/>
+                                        <polygon points="50,25 70,35 50,45 30,35" fill="rgba(0, 229, 255, 0.2)"/>
+                                        <circle cx="50" cy="45" r="3" fill="#00E5FF" class="svg-glow-cyan"/>
+                                        <!-- Antennae -->
+                                        <line x1="25" y1="35" x2="25" y2="15" stroke="#475569" stroke-width="2" stroke-linecap="round"/>
+                                        <circle cx="25" cy="15" r="1.5" fill="#00E5FF"/>
+                                        <line x1="75" y1="35" x2="75" y2="15" stroke="#475569" stroke-width="2" stroke-linecap="round"/>
+                                        <circle cx="75" cy="15" r="1.5" fill="#00E5FF"/>
+                                    </g>
+                                </svg>
+                            </div>
+                            
+                            <h3 class="text-2xl font-bold text-white mb-1">pfSense Firewall</h3>
+                            <p class="text-cyan-400 font-mono text-sm mb-4">Stateful Inspection</p>
+                            
+                            <div class="flex justify-between items-center text-xs tech-font text-zinc-400 mt-6 pt-4 border-t border-white/10">
+                                <span>WAN: 172.30.0.1</span>
+                                <span>LAN: 192.168.1.1</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Horizontal Datapipes (Desktop) -->
+                    <div class="hidden md:flex w-[20%] items-center justify-center relative">
+                        <div class="absolute w-full h-[60px] top-1/2 -translate-y-1/2 flex flex-col justify-between">
+                            <div class="data-line-h w-full rotate-180"></div>
+                            <div class="data-line-h"></div>
+                        </div>
+                    </div>
+
+                    <!-- Vertical Datapipes (Mobile) -->
+                    <div class="md:hidden h-16 w-full flex justify-center items-center relative">
+                        <div class="data-line-v h-full"></div>
+                    </div>
+
+                    <!-- LAN Zone -->
+                    <div class="w-full md:w-[30%] bento-panel rounded-2xl p-6 relative group z-10 border-t-cyan-400/30">
+                        <div class="absolute -top-3 right-4 bg-space-900 border border-cyan-400/30 px-3 py-1 rounded-full flex items-center gap-2">
+                            <div class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></div>
+                            <span class="tech-font text-[10px] text-zinc-300">ZONA SEGURA SEC</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-2">Segmento LAN</h3>
+                        <p class="tech-font text-sm text-cyan-400 mb-6 font-semibold">192.168.1.0/24</p>
+                        <ul class="space-y-3">
+                            <li class="flex items-center gap-3 text-sm text-zinc-300"><i class="ph ph-hard-drives text-zinc-500"></i> Servidores de Dominio</li>
+                            <li class="flex items-center gap-3 text-sm text-zinc-300"><i class="ph ph-globe text-zinc-500"></i> Infraestructura Web</li>
+                            <li class="flex items-center gap-3 text-sm text-zinc-300"><i class="ph ph-shield-check text-zinc-500"></i> Roles y VPN</li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Stylized Divider -->
+        <div class="w-full max-w-4xl mx-auto h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+
+
+        <!-- ========================================================
+             SECTION 2: SEGMENTO LAN (MICRO)
+             ======================================================== -->
+        <section class="min-h-[100dvh] reveal-node" id="segmento-lan text-left">
+            <div class="mb-12 border-l-4 border-cyan-500 pl-6">
+                <h2 class="text-4xl md:text-5xl font-bold tracking-ultra text-white mb-2">Segmento LAN</h2>
+                <div class="flex items-center gap-4 text-zinc-400 tech-font">
+                    <span class="bg-white/5 py-1 px-3 rounded-md border border-white/5"><i class="ph ph-broadcast mr-2 text-cyan-400"></i>192.168.1.0/24</span>
+                    <span class="text-sm">Red Principal Core</span>
+                </div>
+            </div>
+
+            <!-- Bento Box Data Grid for LAN Servers -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                <!-- 1. SRV-DC01 -->
+                <article class="bento-panel rounded-[2rem] p-6 flex flex-col group relative overflow-hidden">
+                    <!-- Decor -->
+                    <div class="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-30 transition-opacity"><i class="ph ph-fingerprint text-6xl text-white"></i></div>
+                    
+                    <!-- Top Illustration (LARGE ISOMETRIC SVG) -->
+                    <div class="h-40 w-full mb-6 flex justify-center items-end" style="animation: float 5s ease-in-out infinite;">
+                        <svg viewBox="0 0 100 120" width="100%" height="100%" fill="none">
+                            <g transform="translate(10, 20)">
+                                <!-- Base Chassis Stack -->
+                                <!-- Mod 1 -->
+                                <polygon points="40,20 70,35 70,55 40,40" class="iso-right"/>
+                                <polygon points="10,35 40,20 40,40 10,55" class="iso-left"/>
+                                <polygon points="40,10 70,25 40,40 10,25" class="iso-top"/>
+                                <!-- Lights -->
+                                <polygon points="50,32 55,34 55,36 50,34" fill="#00E5FF" class="svg-glow-cyan"/>
+                                
+                                <!-- Mod 2 (Main Database block) -->
+                                <polygon points="40,50 70,65 70,85 40,70" class="iso-right"/>
+                                <polygon points="10,65 40,50 40,70 10,85" class="iso-left"/>
+                                <polygon points="40,40 70,55 40,70 10,55" class="iso-top"/>
+                                <!-- Keyhole icon overlay to signify Domain Controller -->
+                                <circle cx="55" cy="65" r="3" fill="#00E5FF"/>
+                                <polygon points="53,68 57,68 55,75" fill="#00E5FF"/>
+                                
+                                <!-- Connection Wire to floor -->
+                                <path d="M40,70 L40,100" stroke="#00E5FF" stroke-width="1" stroke-dasharray="2,2"/>
+                            </g>
+                        </svg>
+                    </div>
+
+                    <!-- Meta Data -->
+                    <div class="mt-auto">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-white">SRV-DC01 y CA</h3>
+                            <span class="tech-font text-[10px] bg-cyan-400/20 text-cyan-400 px-2 py-0.5 rounded border border-cyan-400/30">.20</span>
+                        </div>
+                        <p class="text-sm text-zinc-400 mb-4 h-10">Controlador de Dominio Principal, Autoridad Certificadora.</p>
+                        <div class="space-y-2 border-t border-white/10 pt-4">
+                            <div class="flex justify-between text-xs tech-font text-zinc-300">
+                                <span><i class="ph ph-door-open mr-1 text-zinc-500"></i>RDP / Escritorio R.</span>
+                                <span>Puerto: <strong class="text-cyan-400">3389</strong></span>
+                            </div>
+                            <div class="flex justify-between text-xs tech-font text-zinc-300">
+                                <span><i class="ph ph-identification-card mr-1 text-zinc-500"></i>AD / Kerberos</span>
+                                <span>Puerto: <strong class="text-white">88, 389</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 2. SRV-IIS -->
+                <article class="bento-panel rounded-[2rem] p-6 flex flex-col group relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-30 transition-opacity"><i class="ph ph-globe-hemisphere-west text-6xl text-white"></i></div>
+                    
+                    <div class="h-40 w-full mb-6 flex justify-center items-end" style="animation: float 6s ease-in-out infinite 0.5s;">
+                        <svg viewBox="0 0 100 120" width="100%" height="100%" fill="none">
+                            <g transform="translate(10, 20)">
+                                <!-- Web Server Rack styling -->
+                                <polygon points="40,20 70,35 70,85 40,70" class="iso-right"/>
+                                <polygon points="10,35 40,20 40,70 10,85" class="iso-left"/>
+                                <polygon points="40,10 70,25 40,40 10,25" class="iso-top"/>
+                                <!-- Rack blade divisions -->
+                                <line x1="40" y1="30" x2="70" y2="45" stroke="#111827" stroke-width="2"/>
+                                <line x1="40" y1="40" x2="70" y2="55" stroke="#111827" stroke-width="2"/>
+                                <line x1="40" y1="50" x2="70" y2="65" stroke="#111827" stroke-width="2"/>
+                                <!-- Status LEDs Web Node -->
+                                <circle cx="50" cy="35" r="1.5" fill="#00E5FF" class="svg-glow-cyan"/>
+                                <circle cx="50" cy="45" r="1.5" fill="#00E5FF" class="svg-glow-cyan"/>
+                                <circle cx="50" cy="55" r="1.5" fill="#00E5FF" class="svg-glow-cyan"/>
+                                <!-- Web mesh overlay -->
+                                <circle cx="25" cy="55" r="4" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+                                <path d="M15,55 C20,50 30,50 35,55" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/>
+                            </g>
+                        </svg>
+                    </div>
+
+                    <div class="mt-auto">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-white">SRV-IIS</h3>
+                            <span class="tech-font text-[10px] bg-cyan-400/20 text-cyan-400 px-2 py-0.5 rounded border border-cyan-400/30">.30</span>
+                        </div>
+                        <p class="text-sm text-zinc-400 mb-4 h-10">Servidor Web Corporativo (Internet Information Services).</p>
+                        <div class="space-y-2 border-t border-white/10 pt-4">
+                            <div class="flex justify-between text-xs tech-font text-zinc-300">
+                                <span><i class="ph ph-globe mr-1 text-zinc-500"></i>HTTP / Trafico Plano</span>
+                                <span>Puerto: <strong class="text-white">80</strong></span>
+                            </div>
+                            <div class="flex justify-between text-xs tech-font text-zinc-300">
+                                <span><i class="ph ph-lock mr-1 text-zinc-500"></i>HTTPS / Traf. Seguro</span>
+                                <span>Puerto: <strong class="text-cyan-400">443</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 3. SRV-DC02 -->
+                <article class="bento-panel rounded-[2rem] p-6 flex flex-col group relative overflow-hidden border-t-white/10 lg:col-start-3">
+                    <div class="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-30 transition-opacity"><i class="ph ph-copy text-6xl text-white"></i></div>
+                    
+                    <div class="h-40 w-full mb-6 flex justify-center items-end opacity-70" style="animation: float 4s ease-in-out infinite 0.2s;">
+                        <svg viewBox="0 0 100 120" width="100%" height="100%" fill="none">
+                            <g transform="translate(10, 20)">
+                                <!-- Similar to DC01 but more subtle to represent secondary -->
+                                <polygon points="40,40 70,55 70,85 40,70" class="iso-right"/>
+                                <polygon points="10,55 40,40 40,70 10,85" class="iso-left"/>
+                                <polygon points="40,30 70,45 40,60 10,45" class="iso-top"/>
+                                <polyline points="45,55 52,50 63,55 52,60 45,55" stroke="rgba(255,255,255,0.3)" stroke-width="1" fill="none"/>
+                            </g>
+                        </svg>
+                    </div>
+
+                    <div class="mt-auto">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-white">SRV-DC02</h3>
+                            <span class="tech-font text-[10px] bg-zinc-400/20 text-zinc-300 px-2 py-0.5 rounded border border-zinc-400/30">.21</span>
+                        </div>
+                        <p class="text-sm text-zinc-400 mb-4 h-10">Controlador de Dominio Secundario. Failover AD.</p>
+                        <div class="space-y-2 border-t border-white/10 pt-4">
+                            <div class="flex justify-between text-xs tech-font text-zinc-300">
+                                <span><i class="ph ph-arrows-clockwise mr-1 text-zinc-500"></i>Replicación AD</span>
+                                <span><strong class="text-white">Sincronizado</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 4. SRV-RRAS (VPN) -->
+                <article class="bento-panel rounded-[2rem] p-6 flex flex-col group relative overflow-hidden md:col-span-2 lg:col-span-1">
+                    <div class="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-30 transition-opacity"><i class="ph ph-shield-checkered text-6xl text-white"></i></div>
+                    
+                    <div class="h-40 w-full mb-6 flex justify-center items-end" style="animation: float 5.5s ease-in-out infinite 0.8s;">
+                        <svg viewBox="0 0 100 120" width="100%" height="100%" fill="none">
+                            <g transform="translate(10, 20)">
+                                <!-- Router/VPN Server Rack (Wider) -->
+                                <polygon points="40,25 75,40 75,60 40,45" class="iso-right"/>
+                                <polygon points="5,40 40,25 40,45 5,60" class="iso-left"/>
+                                <polygon points="40,15 75,30 40,45 5,30" class="iso-top"/>
+                                <!-- Key/Lock tunnel effect -->
+                                <path d="M40,35 C45,35 48,38 48,42 C48,46 45,49 40,49" stroke="#00E5FF" stroke-width="1.5" fill="none"/>
+                                <line x1="40" y1="42" x2="33" y2="42" stroke="#00E5FF" stroke-width="1.5"/>
+                                <!-- Tunel dash -->
+                                <path d="M40,49 L40,65" stroke="rgba(0, 229, 255, 0.5)" stroke-width="1.5" stroke-dasharray="2,2"/>
+                            </g>
+                        </svg>
+                    </div>
+
+                    <div class="mt-auto">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-white">SRV-RRAS</h3>
+                            <span class="tech-font text-[10px] bg-cyan-400/20 text-cyan-400 px-2 py-0.5 rounded border border-cyan-400/30">.40</span>
+                        </div>
+                        <p class="text-sm text-zinc-400 mb-4 h-10">Enrutamiento y Acceso Remoto. Gateway VPN seguro.</p>
+                        <div class="space-y-2 border-t border-white/10 pt-4">
+                            <div class="flex justify-between text-xs tech-font text-zinc-300">
+                                <span><i class="ph ph-key mr-1 text-zinc-500"></i>Túnel VPN (L2TP/IPsec)</span>
+                                <span><strong class="text-cyan-400">Activo</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 5. Switch L2 & Firewall Embedded Info -->
+                <div class="col-span-1 lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <!-- L2 Switch -->
+                    <article class="bento-panel border-white/5 rounded-[2rem] p-6 flex flex-col items-center justify-center text-center">
+                        <div class="h-20 w-48 mb-4">
+                            <svg viewBox="0 0 100 50" width="100%" height="100%" fill="none">
+                                <g transform="translate(10, 10)">
+                                    <!-- Flat Switch Chassis -->
+                                    <polygon points="40,5 80,15 80,25 40,15" class="iso-right"/>
+                                    <polygon points="0,15 40,5 40,15 0,25" class="iso-left"/>
+                                    <polygon points="40,-5 80,5 40,15 0,5" class="iso-top"/>
+                                    <!-- Ports row -->
+                                    <line x1="45" y1="10" x2="75" y2="18" stroke="#111827" stroke-dasharray="2,2" stroke-width="4"/>
+                                    <line x1="5" y1="18" x2="35" y2="10" stroke="#111827" stroke-dasharray="2,2" stroke-width="4"/>
+                                </g>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-bold text-white">Switch 2960-24TT</h3>
+                        <p class="text-xs text-zinc-400 max-w-[200px] mt-2">Switch Capa 2 Core. Concentra todo el tráfico de las unidades LAN.</p>
+                    </article>
+
+                    <!-- Gateway Node Info Card -->
+                    <article class="bento-panel bg-cyan-900/10 border-cyan-500/20 rounded-[2rem] p-6 flex flex-col justify-center relative overflow-hidden">
+                        <!-- Abstract Mesh bg -->
+                        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,229,255,0.05)_0%,transparent_70%)]"></div>
+                        <div class="relative z-10">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-8 h-8 rounded bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400">
+                                    <i class="ph ph-router"></i>
+                                </div>
+                                <h3 class="text-xl font-bold text-white">Gateway LAN</h3>
+                            </div>
+                            <div class="space-y-4">
+                                <div>
+                                    <p class="text-xs text-zinc-500 uppercase tracking-wider mb-1">Dispositivo Lógico</p>
+                                    <p class="text-sm font-semibold text-zinc-200">ISR4331 pfSense v2.6</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-zinc-500 uppercase tracking-wider mb-1">Puerta de Enlace Predeterminada</p>
+                                    <p class="tech-font text-xl text-cyan-400 font-bold border-b border-cyan-400/20 pb-2 inline-block">192.168.1.1</p>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                    
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Stylized Divider -->
+        <div class="w-full max-w-4xl mx-auto h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+
+
+        <!-- ========================================================
+             SECTION 3: SEGMENTO WAN (MACRO)
+             ======================================================== -->
+        <section class="min-h-[70vh] flex flex-col justify-center reveal-node" id="segmento-wan">
+            
+            <div class="mb-12 border-l-4 border-alert-400 pl-6 text-left">
+                <h2 class="text-4xl md:text-5xl font-bold tracking-ultra text-white mb-2">Segmento WAN</h2>
+                <div class="flex items-center gap-4 text-zinc-400 tech-font">
+                    <span class="bg-white/5 py-1 px-3 rounded-md border border-white/5"><i class="ph ph-warning-circle mr-2 text-alert-400"></i>172.30.0.0/24</span>
+                    <span class="text-sm">Zona Externa / Borde</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <!-- Cloud ISP -->
+                <div class="bento-panel flex flex-col items-center justify-center p-8 rounded-3xl group md:col-span-1">
+                    <div class="w-32 h-32 mb-6 relative">
+                        <div class="absolute inset-0 bg-white/5 blur-2xl rounded-full z-0 group-hover:bg-white/10 transition-colors"></div>
+                        <svg viewBox="0 0 100 100" class="w-full h-full relative z-10 drop-shadow-xl" fill="none">
+                            <g transform="translate(10, 20)">
+                                <!-- Isometric Cloud Nodes -->
+                                <polygon points="40,10 60,15 40,20 20,15" fill="rgba(255,255,255,0.1)" stroke="#cbd5e1" stroke-width="0.5"/>
+                                <polygon points="20,15 40,20 40,40 20,35" fill="rgba(255,255,255,0.05)" stroke="#cbd5e1" stroke-width="0.5"/>
+                                <polygon points="40,20 60,15 60,35 40,40" fill="rgba(255,255,255,0.02)" stroke="#cbd5e1" stroke-width="0.5"/>
+                                
+                                <polygon points="60,20 80,25 60,30 40,25" fill="rgba(255,255,255,0.1)" stroke="#cbd5e1" stroke-width="0.5"/>
+                                <polygon points="40,25 60,30 60,50 40,45" fill="rgba(255,255,255,0.05)" stroke="#cbd5e1" stroke-width="0.5"/>
+                                <polygon points="60,30 80,25 80,45 60,50" fill="rgba(255,255,255,0.02)" stroke="#cbd5e1" stroke-width="0.5"/>
+                                
+                                <path d="M40,20 Q60,5 80,25 T60,50 Q40,60 20,35 T40,20 Z" stroke="rgba(255,255,255,0.2)" fill="none" stroke-width="1.5" stroke-dasharray="4,4"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Cloud1</h3>
+                    <p class="text-sm text-zinc-400 text-center">Conexión ISP / Salida a Internet Global.</p>
+                </div>
+
+                <!-- Central Border Router -->
+                <div class="bento-panel flex flex-col items-center justify-center p-8 rounded-3xl bg-alert-400/5 border-alert-400/20 md:col-span-1">
+                    <div class="w-40 h-32 mb-6" style="animation: float 4.5s ease-in-out infinite;">
+                        <svg viewBox="0 0 120 80" class="w-full h-full drop-shadow-2xl" fill="none">
+                            <g transform="translate(10, 20)">
+                                <!-- Router Shape (Cylinder/Puck like) Base -->
+                                <path d="M50,10 C80,10 100,18 100,25 L100,45 C100,52 80,60 50,60 C20,60 0,52 0,45 L0,25 C0,18 20,10 50,10 Z" fill="#0f172a" stroke="#FF3366" stroke-width="1"/>
+                                <!-- Top Face -->
+                                <ellipse cx="50" cy="25" rx="50" ry="15" fill="#1e293b" stroke="#FF3366" stroke-width="1.5"/>
+                                <!-- Router Emblem/Ring -->
+                                <ellipse cx="50" cy="25" rx="30" ry="8" fill="none" class="svg-glow-alert" stroke="#FF3366" stroke-width="0.5" stroke-dasharray="3,3"/>
+                                <!-- Status LED -->
+                                <circle cx="50" cy="25" r="2" fill="#FF3366" class="svg-glow-alert"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">ISR4331 Router0</h3>
+                    <p class="text-sm text-zinc-400 text-center mb-4">Router de Borde. Define los estrictos límites de la intranet.</p>
+                    <span class="tech-font text-xs bg-alert-400/20 text-alert-400 px-3 py-1 rounded-full border border-alert-400/30">WAN IP: Dinámico/Estático</span>
+                </div>
+
+                <!-- Windows 7 Test Station -->
+                <div class="bento-panel flex flex-col items-center justify-center p-8 rounded-3xl md:col-span-1">
+                    <div class="w-32 h-32 mb-6">
+                        <svg viewBox="0 0 100 100" class="w-full h-full" fill="none">
+                            <g transform="translate(10, 20)">
+                                <!-- Monitor -->
+                                <polygon points="40,5 80,15 80,45 40,35" fill="#111827" stroke="#475569" stroke-width="1"/>
+                                <!-- Screen -->
+                                <polygon points="43,9 77,18 77,41 43,32" fill="#020617"/>
+                                <!-- Stand -->
+                                <path d="M60,45 L60,55 L50,60 L70,60 Z" fill="#334155"/>
+                                <!-- Tiny logo on screen -->
+                                <rect x="55" y="22" width="10" height="10" fill="rgba(0,180,216,0.3)"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">PC Windows 7</h3>
+                    <p class="text-sm text-zinc-400 text-center">Estación de trabajo aislada para auditoría y testing de reglas.</p>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Stylized Divider -->
+        <div class="w-full max-w-4xl mx-auto h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+
+
+        <!-- ========================================================
+             SECTION 4: POLÍTICAS DE SEGURIDAD (LOGIC)
+             ======================================================== -->
+        <section class="min-h-[80vh] flex flex-col justify-center reveal-node pb-20" id="seguridad">
+            
+            <div class="text-center mb-16 space-y-4 max-w-3xl mx-auto">
+                <h2 class="text-4xl md:text-5xl font-bold tracking-ultra text-white">Políticas de Seguridad</h2>
+                <p class="text-zinc-400 text-lg">Visualización del flujo de tráfico regido por la inspección de paquetes con estado (SPI) en la pasarela pfSense.</p>
+            </div>
+
+            <!-- SPI Visualization Map -->
+            <div class="bento-panel rounded-3xl p-0 overflow-hidden border border-white/5 bg-space-800/80">
+                <div class="grid grid-cols-1 md:grid-cols-2">
+                    
+                    <!-- Left: Ingress (Denied) -->
+                    <div class="p-8 md:p-12 relative flex flex-col">
+                        <div class="absolute inset-0 bg-alert-400/5 mix-blend-screen pointer-events-none"></div>
+                        <div class="flex items-center gap-3 mb-8">
+                            <i class="ph ph-shield-warning text-3xl text-alert-400"></i>
+                            <h3 class="text-2xl font-bold text-white">Tráfico de Entrada (Ingress)</h3>
+                        </div>
+                        
+                        <div class="flex-1 flex flex-col justify-center mb-8 relative h-32 pl-4">
+                            <!-- Visual packet denied -->
+                            <div class="w-full h-[2px] bg-zinc-800 relative z-0">
+                                <div class="absolute right-0 top-1/2 -translate-y-1/2 w-8 h-8 rounded bg-alert-400/20 border border-alert-400 text-alert-400 flex items-center justify-center z-10"><i class="ph ph-x"></i></div>
+                                
+                                <!-- Incoming packet animation -->
+                                <div class="w-4 h-4 bg-alert-400 absolute top-1/2 -translate-y-1/2 shadow-[0_0_10px_rgba(255,51,102,0.8)] rounded-sm" 
+                                     style="animation: ingress-move 3s ease-in infinite;"></div>
+                            </div>
+                            <style>
+                                @keyframes ingress-move {
+                                    0% { left: 0; opacity: 0; }
+                                    10% { opacity: 1; }
+                                    80% { left: calc(100% - 2rem); opacity: 1; transform: translateY(-50%) scale(1); }
+                                    90% { left: calc(100% - 2rem); opacity: 0; transform: translateY(-50%) scale(2); filter: blur(4px); }
+                                    100% { left: calc(100% - 2rem); opacity: 0; }
+                                }
+                            </style>
+                        </div>
+
+                        <div class="border-l-2 border-alert-400/50 pl-4 space-y-2">
+                            <p class="font-bold text-zinc-200">Regla por Defecto (Default Deny)</p>
+                            <p class="text-sm text-zinc-400">Todo tráfico no solicitado originado en la WAN hacia la LAN es bloqueado y descartado silenciosamente (Drop).</p>
+                        </div>
+                    </div>
+
+                    <!-- Right: Egress (Allowed) -->
+                    <div class="p-8 md:p-12 relative flex flex-col border-t md:border-t-0 md:border-l border-white/5 bg-cyan-900/5">
+                        <div class="absolute inset-0 bg-cyan-500/5 mix-blend-screen pointer-events-none"></div>
+                        <div class="flex items-center gap-3 mb-8">
+                            <i class="ph ph-shield-check text-3xl text-cyan-400"></i>
+                            <h3 class="text-2xl font-bold text-white">Tráfico de Salida (Egress)</h3>
+                        </div>
+
+                        <div class="flex-1 flex flex-col justify-center mb-8 relative h-32 pr-4">
+                            <!-- Visual packet allowed / SPI loop -->
+                            <div class="w-full h-[30px] relative z-0 flex items-center">
+                                <!-- Top line out -->
+                                <div class="absolute w-full h-[2px] bg-zinc-800 top-0"></div>
+                                <!-- Bottom line return -->
+                                <div class="absolute w-full h-[2px] bg-zinc-800 bottom-0"></div>
+                                
+                                <div class="w-4 h-4 bg-cyan-400 absolute top-[-7px] rounded-sm shadow-[0_0_10px_rgba(0,229,255,0.8)]" 
+                                     style="animation: egress-out 4s linear infinite;"></div>
+                                     
+                                <div class="w-4 h-4 bg-cyan-600 absolute bottom-[-7px] rounded-full shadow-[0_0_5px_rgba(0,119,182,0.8)]" 
+                                     style="animation: egress-return 4s linear infinite;"></div>
+                            </div>
+                            <style>
+                                @keyframes egress-out {
+                                    0% { right: 100%; opacity: 0; }
+                                    10% { opacity: 1; }
+                                    50% { right: 0; opacity: 1; }
+                                    51% { opacity: 0; }
+                                    100% { opacity: 0; }
+                                }
+                                @keyframes egress-return {
+                                    0% { right: 0; opacity: 0; }
+                                    49% { opacity: 0; }
+                                    50% { right: 0; opacity: 1; }
+                                    90% { opacity: 1; }
+                                    100% { right: 100%; opacity: 0; }
+                                }
+                            </style>
+                        </div>
+
+                        <div class="border-l-2 border-cyan-400/50 pl-4 space-y-2">
+                            <p class="font-bold text-zinc-200">Stateful Packet Inspection (SPI)</p>
+                            <p class="text-sm text-zinc-400">El tráfico originado en la LAN es permitido. El Firewall guarda el estado de la conexión en memoria y autoriza automáticamente el tráfico de retorno legítimo.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Explicit Rule Table -->
+                <div class="p-6 md:p-8 border-t border-white/5 bg-[#080914]">
+                    <h4 class="text-sm uppercase tracking-wider text-zinc-500 mb-4 font-bold">Matriz de Reglas Activas</h4>
+                    <div class="overflow-x-auto">
+                        <div class="min-w-[600px] w-full grid grid-cols-5 gap-4 text-xs font-mono text-zinc-400 border-b border-white/10 pb-2 mb-2">
+                            <div class="col-span-1">ACCIÓN</div>
+                            <div class="col-span-1">INTERFAZ</div>
+                            <div class="col-span-1">ORIGEN</div>
+                            <div class="col-span-1">DESTINO</div>
+                            <div class="col-span-1">PUERTOS</div>
+                        </div>
+                        <div class="min-w-[600px] w-full space-y-2 text-sm font-mono">
+                            <div class="grid grid-cols-5 gap-4 items-center bg-white/5 p-2 rounded">
+                                <div class="col-span-1 text-cyan-400 flex items-center gap-2"><i class="ph ph-check-circle fill-cyan-400"></i> PASS</div>
+                                <div class="col-span-1 text-zinc-300">LAN</div>
+                                <div class="col-span-1 text-zinc-300">LAN net</div>
+                                <div class="col-span-1 text-zinc-300">Cualquiera</div>
+                                <div class="col-span-1 text-zinc-300">* (Todos)</div>
+                            </div>
+                            <div class="grid grid-cols-5 gap-4 items-center bg-white/5 p-2 rounded">
+                                <div class="col-span-1 text-alert-400 flex items-center gap-2"><i class="ph ph-x-circle fill-alert-400"></i> BLOCK</div>
+                                <div class="col-span-1 text-zinc-300">WAN</div>
+                                <div class="col-span-1 text-zinc-300">Cualquiera</div>
+                                <div class="col-span-1 text-zinc-300">WAN address</div>
+                                <div class="col-span-1 text-zinc-300">* (Todos)</div>
+                            </div>
+                            <!-- Nat Example -->
+                            <div class="grid grid-cols-5 gap-4 items-center bg-white/5 p-2 rounded border-l-2 border-cyan-600 pl-1">
+                                <div class="col-span-1 text-cyan-500 flex items-center gap-2"><i class="ph ph-arrows-split"></i> NAT fwd</div>
+                                <div class="col-span-1 text-zinc-300">WAN</div>
+                                <div class="col-span-1 text-zinc-300">Cualquiera</div>
+                                <div class="col-span-1 text-zinc-300">SRV-IIS (.30)</div>
+                                <div class="col-span-1 text-white font-bold">80, 443</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/5 py-8 mt-12 bg-space-900">
+        <div class="max-w-7xl mx-auto px-6 text-center text-zinc-600 text-sm tech-font">
+            <p>Generado proceduralmente | Andina Network Architecture 2024</p>
+        </div>
+    </footer>
+
+    <!-- Interactive Logic via Vanilla JS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Scroll Reveal Intersection Observer
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.15
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        // Optional: stop observing once revealed
+                        // observer.unobserve(entry.target); 
+                    }
+                });
+            }, observerOptions);
+
+            const nodes = document.querySelectorAll('.reveal-node');
+            nodes.forEach(node => {
+                observer.observe(node);
+            });
+
+            // Dynamic Mouse Spotlight effect on Bento Panels
+            const panels = document.querySelectorAll('.bento-panel');
+            
+            panels.forEach(panel => {
+                panel.addEventListener('mousemove', (e) => {
+                    const rect = panel.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    // Create a dynamic radial gradient exactly under the mouse
+                    panel.style.background = `rgba(12, 16, 36, 0.4)`;
+                    panel.style.backgroundImage = `radial-gradient(circle at ${x}px ${y}px, rgba(255,255,255,0.06), transparent 40%)`;
+                });
+                
+                panel.addEventListener('mouseleave', () => {
+                    panel.style.backgroundImage = 'none';
+                    panel.style.background = `rgba(12, 16, 36, 0.4)`;
+                });
+            });
+        });
+    </script>
+</body>
+</html>
